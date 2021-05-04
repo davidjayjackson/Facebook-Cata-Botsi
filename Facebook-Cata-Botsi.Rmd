@@ -1,0 +1,50 @@
+---
+title: "Cata Botsi: Student arrivals"
+author: "David Jackson"
+date: "5/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(scales)
+```
+
+```{r}
+rm(list=ls())
+df <- read.delim("./transactions.csv",sep="|")
+df <- df %>% select(-X,-X.1)
+# df$Ymd <- as.Date(df$Date,format ="%m/%d/%Y")
+summary(df$Duration)
+```
+
+#### (1) What distribution best describes the transaction duration for the entire data set?
+
+* Answer: Uniform distribution
+
+```{r}
+hist(df$Duration,  main = "Uniform Distribution: Duration ")
+```
+
+#### (3) Calculate the 99% confidence limits for the mean of the transaction duration of the entire data set. Round
+your answers to three decimal places. For example, 1.234. 
+
+* Lower limit: 6.005
+* upper limit: 6. 090
+
+```{r}
+boxplot(df$Duration)
+t.test(df$Duration,conf.level = 0.99)
+```
+
+#### (4) You read a discussion on the third year WhatsApp group where a student claims the answer to question 2. was a uniform distribution. Do you believe the claim?  Yes or  No
+
+* Yes it is a uniform distribution
+
+```{r}
+
+
+```
+
