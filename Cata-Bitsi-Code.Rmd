@@ -2,20 +2,24 @@
 title: "Kgotso Botsi"
 author: "Mr.Botsi"
 date: "5/4/2021"
-output: html_document
+output: pdf_document
 ---
 ```{r setup,include=FALSE}
 library(dplyr)
 library(ggplot2)
 library(scales)
+library(lubridate)
 ```
 
 ```{r}
 rm(list=ls())
-df <- read.delim("./transactions.csv",sep="|")
-df <- df %>% select(-X, -X.1)
+df <- readxl::read_xlsx("./transactionsxls.xlsx")
+df$Ymd <- lubridate::dmy_hms(df$Date)
+df$Ymd <- as.Date(df$Ymd)
+
 summary(df$Duration)
 ```
+
 #### (1)What distribution best describes the transaction duration for the entire data set?
 
 * Answer: Uniform Distribution
@@ -28,14 +32,81 @@ hist(df$Duration, main = "Uniform Distribution: Duration ")
 #### (3)Calculate the 99% conidence limits for the mean of the transaction duration of the entire data set. Round
 your answers to three decimal places. For example, 1.234.
  
-* Lower Limit:
-* Upper Limit
+* Lower Limit:6.005
+* Upper Limit6.09
 
 ```{r}
 boxplot(df$Duration)
 t.test(df$Duration,conf.level = 0.99)
 ```
+
 #### (4) You read a discussion on the third year WhatsApp group where a student claims the answer to question 2. was a uniform distribution. Do you believe the claim?  Yes or  No
 
-* Answer: Yes it is a uniform distribution
+Answer: Yes it is a uniform distribution
+
+
+#### (5)Motivate your answer in question 4 using a x^2 test with 6 breaks. That is, use the breaks=6 argument for
+your histogram.
+
+```{r}
+chisq.test(df$Duration,  correct = TRUE)
+hist(df$Duration,breaks = 6)
+
+```
+
+#### (6) What is the total number of entries through the northern turnstile?
+
+```{r}
+table(df$Type,df$Turnstile)
+```
+
+*Answer:660
+
+#### (7)Some students attribute the lower usage of the northern turnstile for entries to an error-prone card reader. Do you agree with them that the proportion of first-time successes is a function of the gate?
+
+* Answer: Yes 
+
+```{r}
+table(df$Turnstile,df$Success)
+TAB <- table(df$Turnstile,df$Success)
+prop.table(TAB)
+tab_df <- as.data.frame(TAB)
+```
+
+#### (8) Motivate your answer in question 7 statistically.
+
+```{r}
+df %>% filter(Success=="true") %>%
+  group_by(Ymd,Turnstile) %>% summarise(Count = n()) %>%
+ggplot() + geom_line(aes(x=Ymd,y=Count,col=Turnstile),lwd=1) +
+  labs(title="Plot of Center Gates True on First Try")
+```
+
+```{r}
+df %>% filter(Success=="false") %>%
+  group_by(Ymd,Turnstile) %>% summarise(Count = n()) %>%
+ggplot() + geom_line(aes(x=Ymd,y=Count,col=Turnstile),lwd=1) +
+  labs(title="Plot of Center Gates False on First Try")
+```
+
+#### (9) Consider students leaving the campus on Wednesday, 4 March 2020 through the center gate, C. What proportion of the day's transactions does it represent? Round your answer to four decimal places. For example, if you believe it is 12.34%, give your answer as 0.1234.
+
+*Answer: 0.5026
+
+
+#### (10) What is the arrival rate, in entries per hour, on weekdays between 08:00 and 09:00? Round your answer to one decimal place. For example, if you believe it is 12.34, give your answer as 12.3.
+
+
+
+#### (11) What distribution should the arrival rate of question 10 typically follow?
+
+
+
+
+#### Submit your supporting code (R or RMarkdown document) as a single file, using your student number as the filename. For example, 01234567.R or 01234567.Rmd.
+
+*File Name:18090533.Rmd.
+
+
+
 
