@@ -1,0 +1,32 @@
+---
+title: "Predict Airline flgits"
+author: "David Jackson"
+date: "6/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(scales)
+library(dplyr)
+library(tidyr)
+library(forecast)
+```
+
+## R Markdown
+
+```{r}
+rm(list=ls())
+bottling <- read.csv("./bottling-line-2021.gz")
+bottling$time <- lubridate::ymd_hms(bottling$time)
+
+bottling %>% count(time,sort = TRUE) 
+```
+
+```{r}
+liquor_sales <- read.csv("./liquor-sales-2020.csv.gz")
+liquor_sales$time <- lubridate::ymd_hms(liquor_sales$time)
+liquor_sales %>% count(time,sort = TRUE)
+```
+
